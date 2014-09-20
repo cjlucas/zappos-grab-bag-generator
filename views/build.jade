@@ -1,0 +1,15 @@
+extends layout
+
+block content
+  each product in products
+    div
+      h2= product.productName
+      p= product.brandName
+      p
+        span $#{product.price}
+        if product.percentOff > 0
+          span #{product.percentOff}% off!
+      img(src=product.thumbnailImageUrl)
+        
+  div
+    h3 Total #{total}
