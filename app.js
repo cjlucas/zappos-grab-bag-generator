@@ -4,7 +4,7 @@ var express = require('express');
 var api = require('./api');
 api.setApiKey(process.env.API_KEY)
 
-PORT = 4592;
+PORT = process.argv[2] || 4592;
 
 var app = express();
 
