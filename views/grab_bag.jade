@@ -1,0 +1,19 @@
+extends layout
+
+block content
+  h3 Here's your grab bag! It's going to cost you $#{total.toFixed(2)}.
+  p
+    a(href='/') Create a new grab bag
+  each product in products
+    div
+      h3
+        a(href=product.productUrl)= product.productName
+      span= product.brandName
+      br
+      span Category: #{product.category}
+      br
+      span $#{product.price}
+      if product.percentOff > 0
+        span #{product.percentOff}% off!
+      br
+      img(src=product.thumbnailImageUrl)

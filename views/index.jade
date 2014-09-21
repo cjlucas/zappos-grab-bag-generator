@@ -1,19 +1,17 @@
 extends layout
 
 block content
+  h1 Zappos Grab Bag Generator
+
   form(method='POST', action='/build')
     p
-      span I'd like to build a 
-      select(name='gender')
-        option(value='mens') mens
-        option(value='womens') womens
-      span  wardrobe with
+      span Build me a grab bag with
       select(name='numItems')
         - var i = minNumItems
         while i <= maxNumItems
-          option(value=i) #{i} items
+          option(value=i) #{i}
           - i++
-      span  totaling around 
+      span  item(s), totaling around 
       select(name='targetPrice')
         each price in prices
           option(value=price) $#{price}

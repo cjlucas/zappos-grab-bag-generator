@@ -9,6 +9,9 @@ const API_INFO = {
 // See: getZapposPriceFacetValues, findPricesInRange
 const PRICES = [];
 
+// max number of prices that can be specified in prices filter
+const MAX_PRICE_RANGE_LENGTH = 50;
+
 function setApiKey(apiKey) {
   API_INFO.key = apiKey;
 }
@@ -52,8 +55,8 @@ function callApi(endpoint, queryObject, callback) {
 
   console.log("calling " + url);
   request.get(opts, function(err, res, body) {
-    if (err) return console.log(err);
-    callback(body);
+    if (err) return callback(err);
+    callback(null, body);
   });
 }
 
@@ -62,21 +65,23 @@ function getZapposPriceFacetValues(callback) {
     facets: ['price'],
     excludes: ['results']
   };
-  callApi('/Search', query, function(res) {
+  callApi('/Search', query, function(err, res) {
     res.facets[0].values.forEach(function(value) {
       PRICES.push(value.name);
     });
 
     // sort low-to-high
-    PRICES.sort(function(a, b) {
-      return parseFloat(a) > parseFloat(b);
-    });
+    PRICES.sort(floatComp);
 
     callback();
   });
 }
 
 module.exports.cacheZapposPrices = getZapposPriceFacetValues;
+
+function floatComp(a, b) {
+  return parseFloat(a) - parseFloat(b);
+}
 
 function findPricesInRange(start, end) {
   end = end == null ? parseFloat(PRICES[PRICES.length - 1]) : end;
@@ -87,22 +92,44 @@ function findPricesInRange(start, end) {
   });
 }
 
+// evenly remove items from an array. returns a new array of size newSize
+function shrinkArray(array, newSize) {
+  if (array.length <= newSize) return array;
+
+  var factor = 1 / (array.length - newSize);
+  var ret = [];
+  for (var i = 0; i < newSize; i++) {
+    ret.push(array[Math.round(i * factor)]);
+  }
+
+  return ret;
+}
+
 // Public
 
-function findProducts(gender, categories, priceRange, limit, callback) {
+function findProducts(priceRange, limit, callback) {
+  var priceRange = findPricesInRange(priceRange[0], priceRange[1]).sort(floatComp);
+  if (priceRange.length == 0) {
+    var error = new Error('No products in that price range');
+    return callback(error, null);
+  }
+
+  console.log(JSON.stringify(priceRange));
+  priceRange = shrinkArray(priceRange, MAX_PRICE_RANGE_LENGTH);
+
   var query = {
     limit: 100,
     // // add a touch of randomization
     // page: Math.floor(Math.random() * 10),
     includes: ['categoryFacet'],
     filters: {
-      gender: gender,
-      category: categories,
-      price: findPricesInRange(priceRange[0], priceRange[1]).sort()
+      price: priceRange
     }
   };
 
-  callApi('/Search', query, function(res) {
+  callApi('/Search', query, function(err, res) {
+    if (err) return callback(err);
+
     var products = res.results;
     // cleanup results
     products.forEach(function(product) {
@@ -116,7 +143,7 @@ function findProducts(gender, categories, priceRange, limit, callback) {
       product.category = product.categoryFacet;
       delete products.categoryFacet;
     });
-    callback(products);
+    callback(null, products);
   });
 }
 
