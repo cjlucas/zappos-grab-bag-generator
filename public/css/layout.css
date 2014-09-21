@@ -1,0 +1,21 @@
+body {
+	margin: 0 auto;
+	margin-top: 20px;
+	margin-bottom: 20px;
+	text-align: center;
+	font-family: 'PT Sans', sans-serif;
+}
+
+#grid {
+	margin: auto;
+}
+
+.product {
+	float: left;
+	width: 33%;
+	padding-bottom: 20px;
+}
+
+a {
+	color: #7499C6;
+}
