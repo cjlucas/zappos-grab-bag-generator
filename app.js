@@ -17,7 +17,7 @@ app.set('view engine', 'jade');
 
 var bodyParser = require('body-parser');
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded());
+app.use(bodyParser.urlencoded({extended: true}));
 
 // routes
 
@@ -95,7 +95,6 @@ function findProductTask(totalAmountAvailable, totalItems, deviation) {
 		var avg = amountRemaining / itemsRemaining;
 		var avgDeviation = avg * deviation;
 		targetPriceRange = [avg - avgDeviation, avg + avgDeviation];
-		console.log(targetPriceRange);
 
 		api.findProducts(targetPriceRange, 100 /* limit */, function(err, products) {
 			if (err) return callback(err, chosenProducts);

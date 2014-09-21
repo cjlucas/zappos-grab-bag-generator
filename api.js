@@ -53,7 +53,7 @@ function callApi(endpoint, queryObject, callback) {
     json: true
   };
 
-  console.log("calling " + url);
+  console.log("\033[34mAPI:\033[0m " + url);
   request.get(opts, function(err, res, body) {
     if (err) return callback(err);
     callback(null, body);
@@ -96,10 +96,15 @@ function findPricesInRange(start, end) {
 function shrinkArray(array, newSize) {
   if (array.length <= newSize) return array;
 
-  var factor = 1 / (array.length - newSize);
+  var factor = array.length / newSize;
   var ret = [];
-  for (var i = 0; i < newSize; i++) {
-    ret.push(array[Math.round(i * factor)]);
+
+  for (var i = 1; i <= newSize; i++) {
+    var index = Math.round(i * factor) - 1;
+    if (ret.length == 0 
+      || ret[ret.length - 1] != array[index]) {
+      ret.push(array[index]);
+    }
   }
 
   return ret;
@@ -114,7 +119,6 @@ function findProducts(priceRange, limit, callback) {
     return callback(error, null);
   }
 
-  console.log(JSON.stringify(priceRange));
   priceRange = shrinkArray(priceRange, MAX_PRICE_RANGE_LENGTH);
 
   var query = {
