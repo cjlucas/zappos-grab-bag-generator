@@ -24,8 +24,8 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.get('/', function(req, res) {
 	var targetPrices = [];
 
-	// allow user to specifiy target prices between $100-1$000 in $50 increments 
-	for (var i = 100; i <= 1000; i += 50) {
+	// allow user to specifiy target prices between $100-$5000 in $100 increments 
+	for (var i = 100; i <= 5000; i += 100) {
 		targetPrices.push(i);
 	}
 

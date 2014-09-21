@@ -138,6 +138,7 @@ function findProducts(priceRange, limit, callback) {
     // cleanup results
     products.forEach(function(product) {
       // convert price to number
+      product.price = product.price.replace(',', '');
       product.price = parseFloat(product.price.match(/\$([\d\.]*)/)[1]);
 
       // convet percent off to number
