@@ -3,7 +3,7 @@ extends layout
 block content
   form(method='POST', action='/build')
     p
-      span Build me a grab bag with
+      span Build a grab bag with
       select(name='numItems')
         - var i = minNumItems
         while i <= maxNumItems
